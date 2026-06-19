@@ -308,15 +308,19 @@ int main(void)
 			MapDrawFG(xOff,yOff, 0, 0, WIDTH, HEIGHT, 0);
 			
 			player.DrawSprites(xOff, yOff);
+			al_draw_filled_rectangle(0, 0, WIDTH, 32, al_map_rgb(0, 0, 0));
+
 			al_draw_textf(
 				font,
 				al_map_rgb(255, 255, 255),
 				10,
 				10,
 				0,
-				"Level: %d / 3   Time Remaining: %.1f",
+				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d",
 				currentLevel,
-				timeRemaining
+				timeRemaining,
+				lives,
+				totalFoodCollected
 			);
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0,0,0));
