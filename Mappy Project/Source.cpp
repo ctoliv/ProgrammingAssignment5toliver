@@ -9,6 +9,7 @@ using namespace std;
 
 int collided(int x, int y);  //Tile Collision
 bool endValue( int x, int y ); //End Block with the User Value = 8
+bool foodValue(int x, int y);
 int headCollided(int x, int y);
 int main(void)
 {
@@ -24,6 +25,8 @@ int main(void)
 	int lives = 3;
 	int foodCollected = 0;
 	int totalFoodCollected = 0;
+	bool touchingFood = false;
+	bool collectedFood[4][200][50] = { false };
 	bool done = false;
 	bool render = false;
 	bool levelComplete = false;
@@ -201,6 +204,26 @@ int main(void)
 			{
 				player.StandStill();
 			}
+
+			// Check if the player touched a food tile.
+			int foodTileX = (player.getX() + player.getWidth() / 2) / mapblockwidth;
+			int foodTileY = (player.getY() + player.getHeight() / 2) / mapblockheight;
+
+			if (foodValue(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2))
+			{
+				// Only collect this specific food tile once.
+				if (!collectedFood[currentLevel][foodTileX][foodTileY])
+				{
+					foodCollected++;
+					totalFoodCollected++;
+
+					collectedFood[currentLevel][foodTileX][foodTileY] = true;
+
+					cout << "Food collected!" << endl;
+				}
+			}
+
+
 			if (player.CollisionEndBlock())
 			{
 				cout << "Level complete!" << endl;
@@ -395,4 +418,18 @@ bool endValue( int x, int y )
 		return true;
 	}else
 		return false;
+}
+bool foodValue(int x, int y)
+{
+	BLKSTR* data;
+	data = MapGetBlock(x / mapblockwidth, y / mapblockheight);
+
+	if (data->user1 == 5)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
