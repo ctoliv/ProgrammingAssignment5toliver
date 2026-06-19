@@ -10,6 +10,7 @@ using namespace std;
 int collided(int x, int y);  //Tile Collision
 bool endValue( int x, int y ); //End Block with the User Value = 8
 bool foodValue(int x, int y);
+bool hazardValue(int x, int y);
 int headCollided(int x, int y);
 int main(void)
 {
@@ -23,10 +24,12 @@ int main(void)
 	bool gameStarted = false;
 	bool gameOver = false;
 	int lives = 3;
+
 	int foodCollected = 0;
 	int totalFoodCollected = 0;
 	bool touchingFood = false;
 	bool collectedFood[4][200][50] = { false };
+
 	bool done = false;
 	bool render = false;
 	bool levelComplete = false;
@@ -220,6 +223,22 @@ int main(void)
 					collectedFood[currentLevel][foodTileX][foodTileY] = true;
 
 					cout << "Food collected!" << endl;
+				}
+			}
+
+			// Check if the player touched a hazard tile.
+			if (hazardValue(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2))
+			{
+				lives--;
+
+				cout << "Hazard hit!" << endl;
+
+				player.ResetPosition(80, 120);
+
+				if (lives <= 0)
+				{
+					gameOver = true;
+					done = true;
 				}
 			}
 
@@ -425,6 +444,20 @@ bool foodValue(int x, int y)
 	data = MapGetBlock(x / mapblockwidth, y / mapblockheight);
 
 	if (data->user1 == 5)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool hazardValue(int x, int y)
+{
+	BLKSTR* data;
+	data = MapGetBlock(x / mapblockwidth, y / mapblockheight);
+
+	if (data->user1 == 6)
 	{
 		return true;
 	}
