@@ -24,6 +24,7 @@ int main(void)
 	bool gameStarted = false;
 	bool gameOver = false;
 	int lives = 3;
+	int hitEffectTimer = 0;
 
 	int foodCollected = 0;
 	int totalFoodCollected = 0;
@@ -229,16 +230,32 @@ int main(void)
 			// Check if the player touched a hazard tile.
 			if (hazardValue(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2))
 			{
-				lives--;
-
-				cout << "Hazard hit!" << endl;
-
-				player.ResetPosition(80, 120);
-
-				if (lives <= 0)
+				if (hitEffectTimer == 0)
 				{
-					gameOver = true;
-					done = true;
+					lives--;
+
+					cout << "Hazard hit!" << endl;
+
+					player.SetHitEffect(true);
+					hitEffectTimer = 60; // about 1 second at 60 FPS
+
+					player.ResetPosition(80, 120);
+
+					if (lives <= 0)
+					{
+						gameOver = true;
+						done = true;
+					}
+				}
+			}
+			// Count down the hit effect.
+			if (hitEffectTimer > 0)
+			{
+				hitEffectTimer--;
+
+				if (hitEffectTimer == 0)
+				{
+					player.SetHitEffect(false);
 				}
 			}
 

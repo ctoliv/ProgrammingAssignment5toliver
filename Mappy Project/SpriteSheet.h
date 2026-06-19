@@ -39,6 +39,7 @@ public:
 	bool CollisionEndBlock();
 	void StandStill();
 	void ResetPosition(float startX, float startY);
+	void SetHitEffect(bool value);
 
 private:
 	float x;
@@ -53,6 +54,8 @@ private:
 	int animationColumns;
 	int animationRows;
 	int animationDirection;
+	bool hitEffect;
+	float hitAngle;
 
 	SpriteGrabber grabber;
 };

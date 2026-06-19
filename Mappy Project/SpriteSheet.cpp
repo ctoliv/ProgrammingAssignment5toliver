@@ -94,7 +94,8 @@ void Sprite::InitSprites(int width, int height)
 	frameHeight = 32;
 	animationColumns = 4;
 	animationDirection = 1;
-	
+	hitEffect = false;
+	hitAngle = 0;
 
 	grabber.LoadSheet("hero1.bmp", frameWidth, frameHeight, animationColumns);
 }
@@ -131,6 +132,16 @@ void Sprite::StandStill()
 {
 	curFrame = 0;
 }
+
+void Sprite::SetHitEffect(bool value)
+{
+	hitEffect = value;
+	if (value)
+	{
+		hitAngle = 0;
+	}
+}
+
 bool Sprite::CollisionEndBlock()
 {
 	if (endValue(x + frameWidth / 2, y + frameHeight / 2))
@@ -143,6 +154,16 @@ void Sprite::DrawSprites(int xoffset, int yoffset)
 {
 	float drawX = x - xoffset;
 	float drawY = y - yoffset;
+
+	if (hitEffect)
+	{
+		// Spin the ant while it is in the hit effect.
+		grabber.DrawRotatedFrame(curFrame, drawX, drawY, hitAngle);
+
+		hitAngle += 0.25;
+
+		return;
+	}
 
 	if (animationDirection == 0) // up
 	{
