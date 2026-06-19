@@ -72,6 +72,39 @@ void SpriteGrabber::DrawRotatedFrame(int frame, float x, float y, float angle)
 		al_destroy_bitmap(frameImage);
 	}
 }
+
+void SpriteGrabber::DrawScaledFrame(int frame, float x, float y, float scale)
+{
+	int fx = (frame % animationColumns) * frameWidth;
+	int fy = (frame / animationColumns) * frameHeight;
+
+	ALLEGRO_BITMAP* frameImage = al_create_sub_bitmap(
+		sheet,
+		fx,
+		fy,
+		frameWidth,
+		frameHeight
+	);
+
+	if (frameImage)
+	{
+		al_draw_scaled_bitmap(
+			frameImage,
+			0,
+			0,
+			frameWidth,
+			frameHeight,
+			x,
+			y,
+			frameWidth * scale,
+			frameHeight * scale,
+			0
+		);
+
+		al_destroy_bitmap(frameImage);
+	}
+}
+
 Sprite::Sprite()
 {
 	
@@ -189,4 +222,9 @@ void Sprite::ResetPosition(float startX, float startY)
     x = startX;
     y = startY;
     curFrame = 0;
+}
+void Sprite::DrawBig(float x, float y)
+{
+	// Draw a larger ant image for the ending screen.
+	grabber.DrawScaledFrame(0, x, y, 3.0);
 }

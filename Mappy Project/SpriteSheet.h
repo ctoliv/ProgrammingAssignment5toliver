@@ -14,6 +14,7 @@ public:
 	bool LoadSheet(const char* filename, int frameW, int frameH, int columns);
 	void DrawFrame(int frame, float x, float y, bool flip);
 	void DrawRotatedFrame(int frame, float x, float y, float angle);
+	void DrawScaledFrame(int frame, float x, float y, float scale);
 
 private:
 	ALLEGRO_BITMAP* sheet;
@@ -40,6 +41,7 @@ public:
 	void StandStill();
 	void ResetPosition(float startX, float startY);
 	void SetHitEffect(bool value);
+	void DrawBig(float x, float y);
 
 private:
 	float x;

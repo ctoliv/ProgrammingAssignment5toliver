@@ -387,7 +387,7 @@ int main(void)
 	}
 	if (gameWon)
 	{
-		al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_clear_to_color(al_map_rgb(40, 120, 40));
 
 		al_draw_text(
 			font,
@@ -397,6 +397,8 @@ int main(void)
 			ALLEGRO_ALIGN_CENTER,
 			"You completed all 3 maze levels!"
 		);
+
+		player.DrawBig(WIDTH / 2 - 48, HEIGHT / 2 + 40);
 
 		al_flip_display();
 		al_rest(5.0);
