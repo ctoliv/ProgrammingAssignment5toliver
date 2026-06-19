@@ -1,5 +1,5 @@
-# Project 4 - Mappy Maze
-
+# Project 5 - Mappy Maze
+---
 ## Description
 
 This project is a three-level hedge maze game made with Allegro 5 and Mappy. The player controls an animated ant sprite and must move through each maze before time runs out. When the player reaches the endpoint of one maze, the next maze loads. After completing all three levels, the game displays a win message.
