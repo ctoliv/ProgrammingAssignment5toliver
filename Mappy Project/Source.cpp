@@ -18,6 +18,12 @@ int main(void)
 	bool keys[] = {false, false, false, false};
 	enum KEYS{UP, DOWN, LEFT, RIGHT};
 	//variables
+	bool introScreen = true;
+	bool gameStarted = false;
+	bool gameOver = false;
+	int lives = 3;
+	int foodCollected = 0;
+	int totalFoodCollected = 0;
 	bool done = false;
 	bool render = false;
 	bool levelComplete = false;
@@ -26,6 +32,8 @@ int main(void)
 	int currentLevel = 1;
 	const int TOTAL_LEVELS = 3;
 
+	double totalStartTime = 0;
+	double totalFinalTime = 0;
 	double startTime = 0;
 	double finalTime = 0;
 	double levelStartTime = 0;
@@ -74,6 +82,7 @@ int main(void)
 	al_start_timer(timer);
 	startTime = al_get_time();
 	levelStartTime = al_get_time();
+	totalStartTime = al_get_time();
 	//draw the background tiles
 	MapDrawBG(xOff,yOff, 0, 0, WIDTH-1, HEIGHT-1);
 
@@ -86,6 +95,77 @@ int main(void)
 	{
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
+		// Draw and control the intro screen before normal gameplay starts.
+		if (introScreen)
+		{
+			if (ev.type == ALLEGRO_EVENT_TIMER)
+			{
+				render = true;
+			}
+
+			if (ev.type == ALLEGRO_EVENT_KEY_DOWN)
+			{
+				if (ev.keyboard.keycode == ALLEGRO_KEY_ENTER)
+				{
+					introScreen = false;
+					gameStarted = true;
+					levelStartTime = al_get_time();
+					totalStartTime = al_get_time();
+				}
+				else if (ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+				{
+					done = true;
+				}
+			}
+
+			if (render && al_is_event_queue_empty(event_queue))
+			{
+				render = false;
+
+				al_clear_to_color(al_map_rgb(0, 0, 0));
+
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 255),
+					WIDTH / 2,
+					120,
+					ALLEGRO_ALIGN_CENTER,
+					"ANT ESCAPE"
+				);
+
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 255),
+					WIDTH / 2,
+					170,
+					ALLEGRO_ALIGN_CENTER,
+					"Use the arrow keys to move through each maze."
+				);
+
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 255),
+					WIDTH / 2,
+					200,
+					ALLEGRO_ALIGN_CENTER,
+					"Collect food, avoid hazards, and reach the exit before time runs out."
+				);
+
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 255),
+					WIDTH / 2,
+					260,
+					ALLEGRO_ALIGN_CENTER,
+					"Press ENTER to start."
+				);
+
+				al_flip_display();
+			}
+
+			continue;
+		}
+		// normal gameplay timer code starts here
 		if(ev.type == ALLEGRO_EVENT_TIMER)
 		{
 			MapUpdateAnims();
