@@ -70,9 +70,13 @@ public:
 
 	void InitEnemy(const char* filename, float startXValue, float startYValue, float moveDistance);
 	void Update();
+	void Deactivate();
 	void Draw(int xoffset, int yoffset);
 	void Reset(float startXValue, float startYValue, float moveDistance);
 	bool CollidesWith(Sprite& player);
+	bool IsActive();
+	float getX() { return x; }
+	float getY() { return y; }
 
 private:
 	float x;
@@ -89,6 +93,7 @@ private:
 	int frameWidth;
 	int frameHeight;
 	int animationColumns;
+	bool active;
 
 	SpriteGrabber grabber;
 };

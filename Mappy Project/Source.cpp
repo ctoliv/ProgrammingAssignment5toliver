@@ -82,6 +82,7 @@ int main(void)
 	ALLEGRO_SAMPLE* collectSound = NULL;
 	ALLEGRO_SAMPLE* damageSound = NULL;
 	ALLEGRO_SAMPLE* winSound = NULL;
+	ALLEGRO_SAMPLE* killSound = NULL;
 
 
 	//program init
@@ -131,6 +132,7 @@ int main(void)
 	collectSound = al_load_sample("collect.wav");
 	damageSound = al_load_sample("damage.wav");
 	winSound = al_load_sample("win.wav");
+	killSound = al_load_sample("kill.wav");
 
 	if (music)
 	{
@@ -318,6 +320,28 @@ int main(void)
 				{
 					projectileX += projectileSpeed;
 				}
+
+				for (int i = 0; i < enemyCount; i++)
+				{
+					if (enemies[i].IsActive())
+					{
+						if (projectileX > enemies[i].getX() &&
+							projectileX < enemies[i].getX() + 32 &&
+							projectileY > enemies[i].getY() &&
+							projectileY < enemies[i].getY() + 32)
+						{
+							enemies[i].Deactivate();
+							projectileActive = false;
+							cout << "Enemy ant defeated!" << endl;
+
+							if (killSound)
+							{
+								al_play_sample(killSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+							}
+						}
+					}
+				}
+
 
 				if (projectileX < 0 || projectileX > mapwidth * mapblockwidth ||
 					projectileY < 0 || projectileY > mapheight * mapblockheight)
@@ -711,6 +735,9 @@ int main(void)
 
 	if (winSound)
 		al_destroy_sample(winSound);
+
+	if (killSound)
+		al_destroy_sample(killSound);
 
 
 	al_destroy_font(font);

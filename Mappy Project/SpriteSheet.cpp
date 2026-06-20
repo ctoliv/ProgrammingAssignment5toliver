@@ -237,6 +237,7 @@ EnemyAnt::EnemyAnt()
 	distance = 120;
 	speed = 2;
 	direction = 1;
+	active = false;
 
 	maxFrame = 3;
 	curFrame = 0;
@@ -260,6 +261,7 @@ void EnemyAnt::InitEnemy(const char* filename, float startXValue, float startYVa
 	distance = moveDistance;
 	speed = 2;
 	direction = 1;
+	active = true;
 
 	maxFrame = 3;
 	curFrame = 0;
@@ -274,6 +276,12 @@ void EnemyAnt::InitEnemy(const char* filename, float startXValue, float startYVa
 
 void EnemyAnt::Update()
 {
+
+	if (!active)
+	{
+		return;
+	}
+
 	float oldX = x;
 	float oldY = y;
 
@@ -312,6 +320,11 @@ void EnemyAnt::Update()
 
 void EnemyAnt::Draw(int xoffset, int yoffset)
 {
+	if (!active)
+	{
+		return;
+	}
+
 	float drawX = x - xoffset;
 	float drawY = y - yoffset;
 
@@ -337,6 +350,11 @@ void EnemyAnt::Reset(float startXValue, float startYValue, float moveDistance)
 
 bool EnemyAnt::CollidesWith(Sprite& player)
 {
+	if (!active)
+	{
+		return false;
+	}
+
 	if (player.getX() < x + frameWidth &&
 		player.getX() + player.getWidth() > x &&
 		player.getY() < y + frameHeight &&
@@ -346,4 +364,14 @@ bool EnemyAnt::CollidesWith(Sprite& player)
 	}
 
 	return false;
+}
+
+void EnemyAnt::Deactivate()
+{
+	active = false;
+}
+
+bool EnemyAnt::IsActive()
+{
+	return active;
 }
