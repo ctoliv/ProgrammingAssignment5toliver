@@ -39,6 +39,7 @@ int main(void)
 	int totalFoodCollected = 0;
 	int foodNeeded = 0;
 	int ammo = 1;
+	int enemiesDefeated = 0;
 	int needFoodMessageTimer = 0;
 	bool touchingFood = false;
 	bool collectedFood[4][200][50] = { false };
@@ -341,6 +342,8 @@ int main(void)
 						{
 							enemies[i].Deactivate();
 							projectileActive = false;
+							enemiesDefeated++;
+
 							cout << "Enemy ant defeated!" << endl;
 
 							if (killSound)
@@ -357,6 +360,7 @@ int main(void)
 				{
 					projectileActive = false;
 				}
+				// If the projectile hits a wall, remove it.
 				if (projectileActive && collided(projectileX, projectileY))
 				{
 					projectileActive = false;
@@ -597,13 +601,14 @@ int main(void)
 				10,
 				10,
 				0,
-				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d / %d   Ammo: %d",
+				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d / %d   Ammo: %d   Defeated: %d",
 				currentLevel,
 				timeRemaining,
 				lives,
 				totalFoodCollected,
 				foodNeeded,
-				ammo
+				ammo,
+				enemiesDefeated
 			);
 
 			if (needFoodMessageTimer > 0)
@@ -659,13 +664,23 @@ int main(void)
 			font,
 			al_map_rgb(255, 255, 255),
 			WIDTH / 2,
+			255,
+			ALLEGRO_ALIGN_CENTER,
+			"Enemy Ants Defeated: %d",
+			enemiesDefeated
+		);
+
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
 			220,
 			ALLEGRO_ALIGN_CENTER,
 			"Final Time: %.1f seconds",
 			totalFinalTime
 		);
 
-		player.DrawBig(WIDTH / 2 - 48, 270);
+		player.DrawBig(WIDTH / 2 - 48, 300);
 
 		al_flip_display();
 		al_rest(5.0);
@@ -713,7 +728,17 @@ int main(void)
 			currentLevel
 		);
 
-		player.DrawBig(WIDTH / 2 - 48, 310);
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			290,
+			ALLEGRO_ALIGN_CENTER,
+			"Enemy Ants Defeated: %d",
+			enemiesDefeated
+		);
+
+		player.DrawBig(WIDTH / 2 - 48, 335);
 
 		al_flip_display();
 		al_rest(5.0);
