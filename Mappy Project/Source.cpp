@@ -357,6 +357,10 @@ int main(void)
 				{
 					projectileActive = false;
 				}
+				if (projectileActive && collided(projectileX, projectileY))
+				{
+					projectileActive = false;
+				}
 			}
 
 			// Check if the player touched a food tile.
