@@ -13,6 +13,7 @@
 using namespace std;
 
 int collided(int x, int y);  //Tile Collision
+int countFoodTiles();
 bool endValue( int x, int y ); //End Block with the User Value = 8
 bool foodValue(int x, int y);
 bool hazardValue(int x, int y);
@@ -36,6 +37,8 @@ int main(void)
 
 	int foodCollected = 0;
 	int totalFoodCollected = 0;
+	int foodNeeded = 0;
+	int needFoodMessageTimer = 0;
 	bool touchingFood = false;
 	bool collectedFood[4][200][50] = { false };
 
@@ -102,6 +105,7 @@ int main(void)
 	int yOff = 0;
 	if(MapLoad("map1.fmp", 1))
 		return -5;
+	foodNeeded = countFoodTiles();
 	setupEnemiesForLevel(enemies, enemyCount, currentLevel);
 
 	event_queue = al_create_event_queue();
@@ -348,46 +352,63 @@ int main(void)
 				}
 			}
 
+			// Count down the collect-all-food message.
+			if (needFoodMessageTimer > 0)
+			{
+				needFoodMessageTimer--;
+			}
+
 
 			if (player.CollisionEndBlock())
 			{
-				cout << "Level complete!" << endl;
-
-				currentLevel++;
-
-				if (currentLevel > TOTAL_LEVELS)
+				if (foodCollected < foodNeeded)
 				{
-					gameWon = true;
-					levelComplete = true;
-					done = true;
-					totalFinalTime = al_get_time() - totalStartTime;
-
-					if (winSound)
-					{
-						al_play_sample(winSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-					}
+					cout << "Collect all food before leaving!" << endl;
+					needFoodMessageTimer = 120;
 				}
 				else
 				{
-					MapFreeMem();
+					cout << "Level complete!" << endl;
 
-					char mapName[20];
-					sprintf_s(mapName, "map%d.fmp", currentLevel);
+					currentLevel++;
 
-					if (MapLoad(mapName, 1))
+					if (currentLevel > TOTAL_LEVELS)
 					{
-						cout << "Could not load " << mapName << endl;
-						return -6;
+						gameWon = true;
+						levelComplete = true;
+						done = true;
+						totalFinalTime = al_get_time() - totalStartTime;
+
+						if (winSound)
+						{
+							al_play_sample(winSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+						}
 					}
+					else
+					{
+						MapFreeMem();
 
-					player.ResetPosition(80, 80);
+						char mapName[20];
+						sprintf_s(mapName, "map%d.fmp", currentLevel);
 
-					setupEnemiesForLevel(enemies, enemyCount, currentLevel);
+						if (MapLoad(mapName, 1))
+						{
+							cout << "Could not load " << mapName << endl;
+							return -6;
+						}
 
-					xOff = 0;
-					yOff = 0;
-					levelStartTime = al_get_time();
-					timeRemaining = LEVEL_TIME;
+						player.ResetPosition(80, 80);
+
+						foodCollected = 0;
+						foodNeeded = countFoodTiles();
+
+						setupEnemiesForLevel(enemies, enemyCount, currentLevel);
+
+						xOff = 0;
+						yOff = 0;
+						levelStartTime = al_get_time();
+						timeRemaining = LEVEL_TIME;
+					}
 				}
 			}
 			render = true;
@@ -476,12 +497,26 @@ int main(void)
 				10,
 				10,
 				0,
-				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d",
+				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d / %d",
 				currentLevel,
 				timeRemaining,
 				lives,
-				totalFoodCollected
+				totalFoodCollected,
+				foodNeeded
 			);
+
+			if (needFoodMessageTimer > 0)
+			{
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 0),
+					WIDTH / 2,
+					40,
+					ALLEGRO_ALIGN_CENTER,
+					"Collect all food before leaving!"
+				);
+			}
+
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0,0,0));
 		}
@@ -755,4 +790,23 @@ void setupEnemiesForLevel(EnemyAnt enemies[], int& enemyCount, int currentLevel)
 
 		enemies[i].InitEnemy("enemy.bmp", enemyX, enemyY, moveDistance);
 	}
+}
+int countFoodTiles()
+{
+	int count = 0;
+
+	for (int y = 0; y < mapheight; y++)
+	{
+		for (int x = 0; x < mapwidth; x++)
+		{
+			BLKSTR* data = MapGetBlock(x, y);
+
+			if (data->user1 == 5)
+			{
+				count++;
+			}
+		}
+	}
+
+	return count;
 }
