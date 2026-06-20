@@ -38,9 +38,17 @@ int main(void)
 	int foodCollected = 0;
 	int totalFoodCollected = 0;
 	int foodNeeded = 0;
+	int ammo = 1;
 	int needFoodMessageTimer = 0;
 	bool touchingFood = false;
 	bool collectedFood[4][200][50] = { false };
+
+	bool projectileActive = false;
+	float projectileX = 0;
+	float projectileY = 0;
+	float projectileSpeed = 8;
+	float playerDirection = 8;
+	int projectileDirection = 3;
 
 	bool done = false;
 	bool render = false;
@@ -237,18 +245,22 @@ int main(void)
 			if (keys[UP])
 			{
 				player.UpdateSprites(0, -4, 0);
+				playerDirection = 0;
 			}
 			else if (keys[DOWN])
 			{
 				player.UpdateSprites(0, 4, 1);
+				playerDirection = 1;
 			}
 			else if (keys[LEFT])
 			{
 				player.UpdateSprites(-4, 0, 2);
+				playerDirection = 2;
 			}
 			else if (keys[RIGHT])
 			{
 				player.UpdateSprites(4, 0, 3);
+				playerDirection = 3;
 			}
 			else
 			{
@@ -288,6 +300,32 @@ int main(void)
 				}
 			}
 
+			if (projectileActive)
+			{
+				if (projectileDirection == 0) // up
+				{
+					projectileY -= projectileSpeed;
+				}
+				else if (projectileDirection == 1) // down
+				{
+					projectileY += projectileSpeed;
+				}
+				else if (projectileDirection == 2) // left
+				{
+					projectileX -= projectileSpeed;
+				}
+				else if (projectileDirection == 3) // right
+				{
+					projectileX += projectileSpeed;
+				}
+
+				if (projectileX < 0 || projectileX > mapwidth * mapblockwidth ||
+					projectileY < 0 || projectileY > mapheight * mapblockheight)
+				{
+					projectileActive = false;
+				}
+			}
+
 			// Check if the player touched a food tile.
 			int foodTileX = (player.getX() + player.getWidth() / 2) / mapblockwidth;
 			int foodTileY = (player.getY() + player.getHeight() / 2) / mapblockheight;
@@ -299,6 +337,7 @@ int main(void)
 				{
 					foodCollected++;
 					totalFoodCollected++;
+					ammo++;
 
 					collectedFood[currentLevel][foodTileX][foodTileY] = true;
 
@@ -437,6 +476,19 @@ int main(void)
 			case ALLEGRO_KEY_RIGHT:
 				keys[RIGHT] = true;
 				break;
+			case ALLEGRO_KEY_SPACE:
+				if (!projectileActive && ammo > 0)
+				{
+					projectileActive = true;
+					ammo--;
+
+					projectileX = player.getX() + player.getWidth() / 2;
+					projectileY = player.getY() + player.getHeight() / 2;
+
+					projectileDirection = playerDirection;
+
+				}
+				break;
 
 			}
 		}
@@ -488,6 +540,17 @@ int main(void)
 			{
 				enemies[i].Draw(xOff, yOff);
 			}
+
+			if (projectileActive)
+			{
+				al_draw_filled_circle(
+					projectileX - xOff,
+					projectileY - yOff,
+					5,
+					al_map_rgb(255, 255, 0)
+				);
+			}
+
 			player.DrawSprites(xOff, yOff);
 			al_draw_filled_rectangle(0, 0, WIDTH, 32, al_map_rgb(0, 0, 0));
 
@@ -497,12 +560,13 @@ int main(void)
 				10,
 				10,
 				0,
-				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d / %d",
+				"Level: %d / 3   Time: %.1f   Lives: %d   Food: %d / %d   Ammo: %d",
 				currentLevel,
 				timeRemaining,
 				lives,
 				totalFoodCollected,
-				foodNeeded
+				foodNeeded,
+				ammo
 			);
 
 			if (needFoodMessageTimer > 0)
