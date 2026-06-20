@@ -8,6 +8,8 @@
 #include "SpriteSheet.h"
 #include "mappy_A5.h"
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 int collided(int x, int y);  //Tile Collision
@@ -15,6 +17,9 @@ bool endValue( int x, int y ); //End Block with the User Value = 8
 bool foodValue(int x, int y);
 bool hazardValue(int x, int y);
 int headCollided(int x, int y);
+bool enemyPathClear(int x, int y, int moveDistance);
+bool findRandomEnemySpot(float& enemyX, float& enemyY, int moveDistance);
+void setupEnemiesForLevel(EnemyAnt enemies[], int& enemyCount, int currentLevel);
 int main(void)
 {
 	const int WIDTH = 900;
@@ -51,6 +56,10 @@ int main(void)
 	//Player Variable
 	Sprite player;
 
+	// Enemy ant variables
+	const int MAX_ENEMIES = 10;
+	EnemyAnt enemies[MAX_ENEMIES];
+	int enemyCount = 0;
 
 
 	//allegro variable
@@ -67,6 +76,8 @@ int main(void)
 	//program init
 	if(!al_init())										//initialize Allegro
 		return -1;
+
+	srand(time(NULL));
 
 	display = al_create_display(WIDTH, HEIGHT);			//create our display object
 
@@ -85,10 +96,13 @@ int main(void)
 
 	player.InitSprites(WIDTH,HEIGHT);
 
+	
+
 	int xOff = 0;
 	int yOff = 0;
 	if(MapLoad("map1.fmp", 1))
 		return -5;
+	setupEnemiesForLevel(enemies, enemyCount, currentLevel);
 
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / 60);
@@ -236,6 +250,39 @@ int main(void)
 			{
 				player.StandStill();
 			}
+			for (int i = 0; i < enemyCount; i++)
+			{
+				enemies[i].Update();
+			}
+
+			for (int i = 0; i < enemyCount; i++)
+			{
+				if (enemies[i].CollidesWith(player))
+				{
+					if (hitEffectTimer == 0)
+					{
+						lives--;
+
+						cout << "Enemy ant hit!" << endl;
+
+						if (damageSound)
+						{
+							al_play_sample(damageSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+						}
+
+						player.SetHitEffect(true);
+						hitEffectTimer = 60;
+
+						player.ResetPosition(80, 80);
+
+						if (lives <= 0)
+						{
+							gameOver = true;
+							done = true;
+						}
+					}
+				}
+			}
 
 			// Check if the player touched a food tile.
 			int foodTileX = (player.getX() + player.getWidth() / 2) / mapblockwidth;
@@ -281,7 +328,7 @@ int main(void)
 					player.SetHitEffect(true);
 					hitEffectTimer = 60; // about 1 second at 60 FPS
 
-					player.ResetPosition(80, 120);
+					player.ResetPosition(80, 80);
 
 					if (lives <= 0)
 					{
@@ -334,6 +381,9 @@ int main(void)
 					}
 
 					player.ResetPosition(80, 80);
+
+					setupEnemiesForLevel(enemies, enemyCount, currentLevel);
+
 					xOff = 0;
 					yOff = 0;
 					levelStartTime = al_get_time();
@@ -413,7 +463,10 @@ int main(void)
 
 			//draw foreground tiles
 			MapDrawFG(xOff,yOff, 0, 0, WIDTH, HEIGHT, 0);
-			
+			for (int i = 0; i < enemyCount; i++)
+			{
+				enemies[i].Draw(xOff, yOff);
+			}
 			player.DrawSprites(xOff, yOff);
 			al_draw_filled_rectangle(0, 0, WIDTH, 32, al_map_rgb(0, 0, 0));
 
@@ -624,5 +677,82 @@ bool hazardValue(int x, int y)
 	else
 	{
 		return false;
+	}
+}
+bool enemyPathClear(int x, int y, int moveDistance)
+{
+	for (int step = 0; step <= moveDistance; step += 16)
+	{
+		int checkX = x + step;
+
+		if (collided(checkX, y) ||
+			collided(checkX + 31, y) ||
+			collided(checkX, y + 31) ||
+			collided(checkX + 31, y + 31))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool findRandomEnemySpot(float& enemyX, float& enemyY, int moveDistance)
+{
+	for (int attempt = 0; attempt < 300; attempt++)
+	{
+		int tileX = rand() % mapwidth;
+		int tileY = rand() % mapheight;
+
+		int x = tileX * mapblockwidth;
+		int y = tileY * mapblockheight;
+
+		if (y < 40)
+			continue;
+
+		if (x < 180 && y < 180)
+			continue;
+
+		if (x + moveDistance + 32 >= mapwidth * mapblockwidth)
+			continue;
+
+		if (enemyPathClear(x, y, moveDistance))
+		{
+			enemyX = x;
+			enemyY = y;
+			return true;
+		}
+	}
+
+	enemyX = 300;
+	enemyY = 160;
+	return false;
+}
+
+void setupEnemiesForLevel(EnemyAnt enemies[], int& enemyCount, int currentLevel)
+{
+	if (currentLevel == 1)
+	{
+		enemyCount = 4;
+	}
+	else if (currentLevel == 2)
+	{
+		enemyCount = 6;
+	}
+	else
+	{
+		enemyCount = 8;
+	}
+
+	for (int i = 0; i < enemyCount; i++)
+	{
+		float enemyX;
+		float enemyY;
+
+		int moveDistance = 64 + rand() % 65; // 64 to 128 pixels
+
+		findRandomEnemySpot(enemyX, enemyY, moveDistance);
+
+		enemies[i].InitEnemy("enemy.bmp", enemyX, enemyY, moveDistance);
 	}
 }

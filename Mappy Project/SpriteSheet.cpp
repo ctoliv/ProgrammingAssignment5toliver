@@ -228,3 +228,122 @@ void Sprite::DrawBig(float x, float y)
 	// Draw a larger ant image for the ending screen.
 	grabber.DrawScaledFrame(0, x, y, 3.0);
 }
+
+EnemyAnt::EnemyAnt()
+{
+	x = 0;
+	y = 0;
+	startX = 0;
+	distance = 120;
+	speed = 2;
+	direction = 1;
+
+	maxFrame = 3;
+	curFrame = 0;
+	frameCount = 0;
+	frameDelay = 6;
+	frameWidth = 32;
+	frameHeight = 32;
+	animationColumns = 4;
+}
+
+EnemyAnt::~EnemyAnt()
+{
+
+}
+
+void EnemyAnt::InitEnemy(const char* filename, float startXValue, float startYValue, float moveDistance)
+{
+	x = startXValue;
+	y = startYValue;
+	startX = startXValue;
+	distance = moveDistance;
+	speed = 2;
+	direction = 1;
+
+	maxFrame = 3;
+	curFrame = 0;
+	frameCount = 0;
+	frameDelay = 6;
+	frameWidth = 32;
+	frameHeight = 32;
+	animationColumns = 4;
+
+	grabber.LoadSheet(filename, frameWidth, frameHeight, animationColumns);
+}
+
+void EnemyAnt::Update()
+{
+	float oldX = x;
+	float oldY = y;
+
+	x += speed * direction;
+
+	if (x > startX + distance)
+	{
+		direction = -1;
+	}
+	else if (x < startX)
+	{
+		direction = 1;
+	}
+
+	// If the enemy hits a wall, move back and reverse direction.
+	if (collided(x, y) ||
+		collided(x + frameWidth - 1, y) ||
+		collided(x, y + frameHeight - 1) ||
+		collided(x + frameWidth - 1, y + frameHeight - 1))
+	{
+		x = oldX;
+		y = oldY;
+		direction *= -1;
+	}
+
+	if (++frameCount > frameDelay)
+	{
+		frameCount = 0;
+
+		if (++curFrame > maxFrame)
+		{
+			curFrame = 0;
+		}
+	}
+}
+
+void EnemyAnt::Draw(int xoffset, int yoffset)
+{
+	float drawX = x - xoffset;
+	float drawY = y - yoffset;
+
+	if (direction == -1)
+	{
+		grabber.DrawFrame(curFrame, drawX, drawY, true);
+	}
+	else
+	{
+		grabber.DrawFrame(curFrame, drawX, drawY, false);
+	}
+}
+
+void EnemyAnt::Reset(float startXValue, float startYValue, float moveDistance)
+{
+	x = startXValue;
+	y = startYValue;
+	startX = startXValue;
+	distance = moveDistance;
+	direction = 1;
+	curFrame = 0;
+}
+
+bool EnemyAnt::CollidesWith(Sprite& player)
+{
+	if (player.getX() < x + frameWidth &&
+		player.getX() + player.getWidth() > x &&
+		player.getY() < y + frameHeight &&
+		player.getY() + player.getHeight() > y)
+	{
+		return true;
+	}
+
+	return false;
+}

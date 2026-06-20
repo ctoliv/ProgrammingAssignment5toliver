@@ -5,6 +5,7 @@
 #include <iostream>
 using namespace std;
 int headCollided(int x, int y);
+int collided(int x, int y);
 class SpriteGrabber
 {
 public:
@@ -58,6 +59,36 @@ private:
 	int animationDirection;
 	bool hitEffect;
 	float hitAngle;
+
+	SpriteGrabber grabber;
+};
+class EnemyAnt
+{
+public:
+	EnemyAnt();
+	~EnemyAnt();
+
+	void InitEnemy(const char* filename, float startXValue, float startYValue, float moveDistance);
+	void Update();
+	void Draw(int xoffset, int yoffset);
+	void Reset(float startXValue, float startYValue, float moveDistance);
+	bool CollidesWith(Sprite& player);
+
+private:
+	float x;
+	float y;
+	float startX;
+	float distance;
+	float speed;
+	int direction;
+
+	int maxFrame;
+	int curFrame;
+	int frameCount;
+	int frameDelay;
+	int frameWidth;
+	int frameHeight;
+	int animationColumns;
 
 	SpriteGrabber grabber;
 };
