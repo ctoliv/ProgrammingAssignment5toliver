@@ -191,7 +191,7 @@ int main(void)
 					font,
 					al_map_rgb(255, 255, 255),
 					WIDTH / 2,
-					120,
+					150,
 					ALLEGRO_ALIGN_CENTER,
 					"ANT ESCAPE"
 				);
@@ -200,18 +200,18 @@ int main(void)
 					font,
 					al_map_rgb(255, 255, 255),
 					WIDTH / 2,
-					170,
+					200,
 					ALLEGRO_ALIGN_CENTER,
-					"Use the arrow keys to move through each maze."
+					"Collect all food while avoiding red hazard areas before reaching the exit."
 				);
 
 				al_draw_text(
 					font,
 					al_map_rgb(255, 255, 255),
 					WIDTH / 2,
-					200,
+					230,
 					ALLEGRO_ALIGN_CENTER,
-					"Collect food, avoid hazards, and reach the exit before time runs out."
+					"Food gives ammo. Press SPACE to shoot enemy ants."
 				);
 
 				al_draw_text(
@@ -219,6 +219,15 @@ int main(void)
 					al_map_rgb(255, 255, 255),
 					WIDTH / 2,
 					260,
+					ALLEGRO_ALIGN_CENTER,
+					"Shoot or Avoid enemy ants or you lose a life."
+				);
+
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 255),
+					WIDTH / 2,
+					320,
 					ALLEGRO_ALIGN_CENTER,
 					"Press ENTER to start."
 				);
