@@ -1,4 +1,6 @@
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
@@ -56,6 +58,11 @@ int main(void)
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_FONT* font = NULL;
+	ALLEGRO_SAMPLE* music = NULL;
+	ALLEGRO_SAMPLE* collectSound = NULL;
+	ALLEGRO_SAMPLE* damageSound = NULL;
+	ALLEGRO_SAMPLE* winSound = NULL;
+
 
 	//program init
 	if(!al_init())										//initialize Allegro
@@ -72,6 +79,9 @@ int main(void)
 	al_init_primitives_addon();
 	al_init_font_addon();
 	al_init_ttf_addon();
+	al_install_audio();
+	al_init_acodec_addon();
+	al_reserve_samples(10);
 
 	player.InitSprites(WIDTH,HEIGHT);
 
@@ -89,6 +99,16 @@ int main(void)
 	{
 		cout << "Could not load gamefont.ttf. Using built-in font." << endl;
 		font = al_create_builtin_font();
+	}
+
+	music = al_load_sample("music.wav");
+	collectSound = al_load_sample("collect.wav");
+	damageSound = al_load_sample("damage.wav");
+	winSound = al_load_sample("win.wav");
+
+	if (music)
+	{
+		al_play_sample(music, 0.5, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 	}
 
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -232,8 +252,14 @@ int main(void)
 					collectedFood[currentLevel][foodTileX][foodTileY] = true;
 
 					cout << "Food collected!" << endl;
+
+					if (collectSound)
+					{
+						al_play_sample(collectSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+					}
 				}
 			}
+			
 
 			// Check if the player touched a hazard tile.
 			if (hazardValue(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2))
@@ -243,6 +269,11 @@ int main(void)
 					lives--;
 
 					cout << "Hazard hit!" << endl;
+
+					if (damageSound)
+					{
+						al_play_sample(damageSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+					}
 
 					player.SetHitEffect(true);
 					hitEffectTimer = 60; // about 1 second at 60 FPS
@@ -279,6 +310,12 @@ int main(void)
 					gameWon = true;
 					levelComplete = true;
 					done = true;
+					totalFinalTime = al_get_time() - totalStartTime;
+
+					if (winSound)
+					{
+						al_play_sample(winSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+					}
 				}
 				else
 				{
@@ -428,6 +465,20 @@ int main(void)
 		al_rest(5.0);
 	}
 	MapFreeMem();
+
+	if (music)
+		al_destroy_sample(music);
+
+	if (collectSound)
+		al_destroy_sample(collectSound);
+
+	if (damageSound)
+		al_destroy_sample(damageSound);
+
+	if (winSound)
+		al_destroy_sample(winSound);
+
+
 	al_destroy_font(font);
 	al_destroy_event_queue(event_queue);
 	al_destroy_display(display);						//destroy our display object
