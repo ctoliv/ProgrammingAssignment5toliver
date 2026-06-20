@@ -481,6 +481,55 @@ int main(void)
 		al_flip_display();
 		al_rest(5.0);
 	}
+
+	else if (gameOver)
+	{
+		al_clear_to_color(al_map_rgb(120, 20, 20));
+
+		al_draw_text(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			120,
+			ALLEGRO_ALIGN_CENTER,
+			"Game Over!"
+		);
+
+		al_draw_text(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			170,
+			ALLEGRO_ALIGN_CENTER,
+			"You ran out of lives."
+		);
+
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			220,
+			ALLEGRO_ALIGN_CENTER,
+			"Food Collected: %d",
+			totalFoodCollected
+		);
+
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			255,
+			ALLEGRO_ALIGN_CENTER,
+			"Level Reached: %d",
+			currentLevel
+		);
+
+		player.DrawBig(WIDTH / 2 - 48, 310);
+
+		al_flip_display();
+		al_rest(5.0);
+	}
+
 	else if (timeOver)
 	{
 		al_clear_to_color(al_map_rgb(0, 0, 0));
