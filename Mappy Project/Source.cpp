@@ -40,6 +40,7 @@ int main(void)
 	int foodNeeded = 0;
 	int ammo = 1;
 	int enemiesDefeated = 0;
+	int noAmmoMessageTimer = 0;
 	int needFoodMessageTimer = 0;
 	bool touchingFood = false;
 	bool collectedFood[4][200][50] = { false };
@@ -69,7 +70,7 @@ int main(void)
 	Sprite player;
 
 	// Enemy ant variables
-	const int MAX_ENEMIES = 10;
+	const int MAX_ENEMIES = 20;
 	EnemyAnt enemies[MAX_ENEMIES];
 	int enemyCount = 0;
 
@@ -439,6 +440,10 @@ int main(void)
 				needFoodMessageTimer--;
 			}
 
+			if (noAmmoMessageTimer > 0)
+			{
+				noAmmoMessageTimer--;
+			}
 
 			if (player.CollisionEndBlock())
 			{
@@ -533,7 +538,10 @@ int main(void)
 					{
 						al_play_sample(shootSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 					}
-
+				}
+				else if (ammo <= 0)
+				{
+					noAmmoMessageTimer = 90;
 				}
 				break;
 
@@ -626,6 +634,18 @@ int main(void)
 					40,
 					ALLEGRO_ALIGN_CENTER,
 					"Collect all food before leaving!"
+				);
+			}
+
+			if (noAmmoMessageTimer > 0)
+			{
+				al_draw_text(
+					font,
+					al_map_rgb(255, 255, 0),
+					WIDTH / 2,
+					65,
+					ALLEGRO_ALIGN_CENTER,
+					"No ammo! Collect food to gain ammo."
 				);
 			}
 
@@ -905,15 +925,15 @@ void setupEnemiesForLevel(EnemyAnt enemies[], int& enemyCount, int currentLevel)
 {
 	if (currentLevel == 1)
 	{
-		enemyCount = 4;
+		enemyCount = 7;
 	}
 	else if (currentLevel == 2)
 	{
-		enemyCount = 6;
+		enemyCount = 12;
 	}
 	else
 	{
-		enemyCount = 8;
+		enemyCount = 16;
 	}
 
 	for (int i = 0; i < enemyCount; i++)
