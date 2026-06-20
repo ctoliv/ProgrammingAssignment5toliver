@@ -1,4 +1,5 @@
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
@@ -70,6 +71,7 @@ int main(void)
 	al_init_image_addon();
 	al_init_primitives_addon();
 	al_init_font_addon();
+	al_init_ttf_addon();
 
 	player.InitSprites(WIDTH,HEIGHT);
 
@@ -81,7 +83,13 @@ int main(void)
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / 60);
 
-	font = al_create_builtin_font();
+	font = al_load_ttf_font("gamefont.ttf", 20, 0);
+
+	if (!font)
+	{
+		cout << "Could not load gamefont.ttf. Using built-in font." << endl;
+		font = al_create_builtin_font();
+	}
 
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
