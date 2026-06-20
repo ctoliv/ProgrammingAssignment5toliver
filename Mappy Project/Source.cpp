@@ -84,7 +84,7 @@ int main(void)
 	ALLEGRO_SAMPLE* damageSound = NULL;
 	ALLEGRO_SAMPLE* winSound = NULL;
 	ALLEGRO_SAMPLE* killSound = NULL;
-
+	ALLEGRO_SAMPLE* shootSound = NULL;
 
 	//program init
 	if(!al_init())										//initialize Allegro
@@ -134,6 +134,7 @@ int main(void)
 	damageSound = al_load_sample("damage.wav");
 	winSound = al_load_sample("win.wav");
 	killSound = al_load_sample("kill.wav");
+	shootSound = al_load_sample("shoot.wav");
 
 	if (music)
 	{
@@ -528,6 +529,11 @@ int main(void)
 
 					projectileDirection = playerDirection;
 
+					if (shootSound)
+					{
+						al_play_sample(shootSound, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+					}
+
 				}
 				break;
 
@@ -777,6 +783,8 @@ int main(void)
 	if (killSound)
 		al_destroy_sample(killSound);
 
+	if (shootSound)
+		al_destroy_sample(shootSound);
 
 	al_destroy_font(font);
 	al_destroy_event_queue(event_queue);
