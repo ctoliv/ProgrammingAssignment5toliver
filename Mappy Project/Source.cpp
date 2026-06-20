@@ -251,6 +251,9 @@ int main(void)
 
 					collectedFood[currentLevel][foodTileX][foodTileY] = true;
 
+					// Change the food tile into a normal floor tile after it is collected.
+					MapSetBlock(foodTileX, foodTileY, 419);
+
 					cout << "Food collected!" << endl;
 
 					if (collectSound)
@@ -438,12 +441,42 @@ int main(void)
 			font,
 			al_map_rgb(255, 255, 255),
 			WIDTH / 2,
-			HEIGHT / 2,
+			100,
 			ALLEGRO_ALIGN_CENTER,
 			"You completed all 3 maze levels!"
 		);
 
-		player.DrawBig(WIDTH / 2 - 48, HEIGHT / 2 + 40);
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			150,
+			ALLEGRO_ALIGN_CENTER,
+			"Food Collected: %d",
+			totalFoodCollected
+		);
+
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			185,
+			ALLEGRO_ALIGN_CENTER,
+			"Lives Remaining: %d",
+			lives
+		);
+
+		al_draw_textf(
+			font,
+			al_map_rgb(255, 255, 255),
+			WIDTH / 2,
+			220,
+			ALLEGRO_ALIGN_CENTER,
+			"Final Time: %.1f seconds",
+			totalFinalTime
+		);
+
+		player.DrawBig(WIDTH / 2 - 48, 270);
 
 		al_flip_display();
 		al_rest(5.0);
