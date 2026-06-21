@@ -25,7 +25,7 @@ int main(void)
 {
 	const int WIDTH = 900;
 	const int HEIGHT = 480;
-	const double LEVEL_TIME = 60.0;
+	
 	bool keys[] = {false, false, false, false};
 	enum KEYS{UP, DOWN, LEFT, RIGHT};
 	//variables
@@ -65,7 +65,8 @@ int main(void)
 	double startTime = 0;
 	double finalTime = 0;
 	double levelStartTime = 0;
-	double timeRemaining = LEVEL_TIME;
+	double levelTimeLimit = 60.0;
+	double timeRemaining = levelTimeLimit;
 	//Player Variable
 	Sprite player;
 
@@ -118,6 +119,8 @@ int main(void)
 		return -5;
 	foodNeeded = countFoodTiles();
 	setupEnemiesForLevel(enemies, enemyCount, currentLevel);
+	levelTimeLimit = 60.0;
+	timeRemaining = levelTimeLimit;
 
 	event_queue = al_create_event_queue();
 	timer = al_create_timer(1.0 / 60);
@@ -246,7 +249,7 @@ int main(void)
 			MapUpdateAnims();
 
 			double elapsed = al_get_time() - levelStartTime;
-			timeRemaining = LEVEL_TIME - elapsed;
+			timeRemaining = levelTimeLimit - elapsed;
 
 			if (timeRemaining <= 0)
 			{
@@ -490,10 +493,23 @@ int main(void)
 
 						setupEnemiesForLevel(enemies, enemyCount, currentLevel);
 
+						if (currentLevel == 1)
+						{
+							levelTimeLimit = 60.0;
+						}
+						else if (currentLevel == 2)
+						{
+							levelTimeLimit = 75.0;
+						}
+						else if (currentLevel == 3)
+						{
+							levelTimeLimit = 90.0;
+						}
+
 						xOff = 0;
 						yOff = 0;
 						levelStartTime = al_get_time();
-						timeRemaining = LEVEL_TIME;
+						timeRemaining = levelTimeLimit;
 					}
 				}
 			}
