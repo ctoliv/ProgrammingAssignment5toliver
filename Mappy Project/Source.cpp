@@ -635,7 +635,7 @@ int main(void)
 				currentLevel,
 				timeRemaining,
 				lives,
-				totalFoodCollected,
+				foodCollected,
 				foodNeeded,
 				ammo,
 				enemiesDefeated
