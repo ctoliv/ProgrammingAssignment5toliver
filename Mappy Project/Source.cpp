@@ -49,7 +49,7 @@ int main(void)
 	float projectileX = 0;
 	float projectileY = 0;
 	float projectileSpeed = 8;
-	float playerDirection = 8;
+	int playerDirection = 3;
 	int projectileDirection = 3;
 
 	bool done = false;
@@ -307,7 +307,7 @@ int main(void)
 						hitEffectTimer = 60;
 
 						player.ResetPosition(80, 80);
-
+						projectileActive = false;
 						if (lives <= 0)
 						{
 							gameOver = true;
@@ -418,7 +418,7 @@ int main(void)
 					hitEffectTimer = 60; // about 1 second at 60 FPS
 
 					player.ResetPosition(80, 80);
-
+					projectileActive = false;
 					if (lives <= 0)
 					{
 						gameOver = true;
@@ -487,7 +487,7 @@ int main(void)
 						}
 
 						player.ResetPosition(80, 80);
-
+						projectileActive = false;
 						foodCollected = 0;
 						foodNeeded = countFoodTiles();
 
