@@ -941,7 +941,7 @@ void setupEnemiesForLevel(EnemyAnt enemies[], int& enemyCount, int currentLevel)
 {
 	if (currentLevel == 1)
 	{
-		enemyCount = 7;
+		enemyCount = 8;
 	}
 	else if (currentLevel == 2)
 	{
